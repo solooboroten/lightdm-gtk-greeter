@@ -1,1 +1,2 @@
 copy: *.patch
+tar.gz: @name@-greeter/tar:. name=@name@-greeter-@version@
