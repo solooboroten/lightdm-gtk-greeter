@@ -17,6 +17,8 @@
 #include <stdlib.h>
 #endif
 
+#include <glib-unix.h>
+
 #include <locale.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -1263,7 +1265,7 @@ static void set_displayed_user (LightDMGreeter *greeter, gchar *username)
 
     if (g_strcmp0 (username, "*guest") == 0)
     {
-        user_tooltip = g_strdup(_("Guest Account"));
+        user_tooltip = g_strdup(_("Guest Session"));
     }
 
     set_login_button_label (greeter, username);
@@ -1812,13 +1814,6 @@ a11y_keyboard_cb (GtkCheckMenuItem *item)
 }
 
 static void
-sigterm_cb (int signum)
-{
-    gtk_main_quit();
-    exit (0);
-}
-
-static void
 load_user_list (void)
 {
     const GList *items, *item;
@@ -1850,7 +1845,7 @@ load_user_list (void)
         gtk_list_store_append (GTK_LIST_STORE (model), &iter);
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
                             0, "*guest",
-                            1, _("Guest Account"),
+                            1, _("Guest Session"),
                             2, PANGO_WEIGHT_NORMAL,
                             -1);
     }
@@ -2291,7 +2286,7 @@ main (int argc, char **argv)
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
     textdomain (GETTEXT_PACKAGE);
 
-    signal (SIGTERM, sigterm_cb);
+    g_unix_signal_add(SIGTERM, (GSourceFunc)gtk_main_quit, NULL);
 
 #if GTK_CHECK_VERSION (3, 0, 0)
 #else
